@@ -24,6 +24,8 @@ func AskHandler(c *gin.Context) {
 	}
 
 	gAI := NewGeminiAI(c.Request.Context())
+	defer gAI.Close()
+
 	response, err := gAI.Ask(askRequest.Message)
 	if err != nil {
 		panic(err)
