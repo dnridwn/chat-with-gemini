@@ -13,7 +13,7 @@ type AskRequest struct {
 func AskHandler(c *gin.Context) {
 	var askRequest AskRequest
 	if err := c.ShouldBind(&askRequest); err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"status":  false,
 			"message": "Validation error",
 			"data": map[string]string{
