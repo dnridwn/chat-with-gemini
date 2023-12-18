@@ -1,0 +1,36 @@
+<div nz-row>
+    <ng-template #emptyChat>
+        <div style="display: flex; flex-direction: column; margin-top: 120px;">
+            <span nz-icon nzType="message" nzTheme="outline" style="font-size: 100px;"></span>
+            <p style="margin-top: 20px;">Start chat with Gemini AI!</p>
+        </div>
+    </ng-template>
+
+    <div nz-col [nzSpan]="14" nzOffset="5" style="height: 100vh; width: 100%;">
+        <div #chatContainer style="overflow-y: scroll; -webkit-overflow-scrolling: touch; max-height: 90vh;">
+            <nz-list [nzDataSource]="messages" [nzRenderItem]="item" [nzItemLayout]="'horizontal'" [nzNoResult]="emptyChat" style="padding: 10px; 20px">
+                <ng-template #item let-msg>
+                    <nz-comment [nzAuthor]="msg.author">
+                        <nz-avatar nz-comment-avatar [nzIcon]="msg.avatarIcon"></nz-avatar>
+                        <nz-comment-content>
+                        <p>{{ msg.content }}</p>
+                        </nz-comment-content>
+                    </nz-comment>
+                </ng-template>
+            </nz-list>
+        </div>
+
+        <div style="display: flex; flex-direction: column; position: absolute; width: inherit; bottom: 0; padding: 20px;">
+            <ng-container *ngIf="waitingResponse">
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <nz-spin nzSimple></nz-spin>
+                </div>
+            </ng-container>
+            
+            <div style="display: flex; gap: 8px;">
+                <input nz-input placeholder="Type here..." [(ngModel)]="message" type="text" />
+                <button nz-button nzType="primary" nzShape="circle" [disabled]="waitingResponse" (click)="send()"><span  nz-icon nzType="send"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
