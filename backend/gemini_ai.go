@@ -19,6 +19,7 @@ type GeminiAI struct {
 	ctx    context.Context
 	client *genai.Client
 	model  *genai.GenerativeModel
+	cs     *genai.ChatSession
 }
 
 func NewGeminiAI(ctx context.Context) *GeminiAI {
@@ -28,16 +29,18 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	}
 
 	model := client.GenerativeModel(GeminiPro)
+	cs := model.StartChat()
 
 	return &GeminiAI{
 		ctx:    ctx,
 		client: client,
 		model:  model,
+		cs:     cs,
 	}
 }
 
-func (g *GeminiAI) Ask(message string) (string, error) {
-	resp, err := g.model.GenerateContent(g.ctx, genai.Text(message))
+func (g *GeminiAI) SendMessage(ctx context.Context, message string) (string, error) {
+	resp, err := g.cs.SendMessage(ctx, genai.Text(message))
 	if err != nil {
 		return "", err
 	}

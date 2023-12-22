@@ -8,7 +8,7 @@
 
     <div nz-col [nzSpan]="14" nzOffset="5" style="height: 100vh; width: 100%;">
         <div #chatContainer style="overflow-y: scroll; -webkit-overflow-scrolling: touch; max-height: 90vh;">
-            <nz-list [nzDataSource]="messages" [nzRenderItem]="item" [nzItemLayout]="'horizontal'" [nzNoResult]="emptyChat" style="padding: 10px; 20px">
+            <nz-list [nzDataSource]="messages" [nzRenderItem]="item" [nzItemLayout]="'horizontal'" [nzNoResult]="emptyChat" style="padding: 10px 20px">
                 <ng-template #item let-msg>
                     <nz-comment [nzAuthor]="msg.author">
                         <nz-avatar nz-comment-avatar [nzIcon]="msg.avatarIcon"></nz-avatar>
@@ -27,9 +27,11 @@
                 </div>
             </ng-container>
             
-            <div style="display: flex; gap: 8px;">
-                <input nz-input placeholder="Type here..." [(ngModel)]="message" type="text" />
-                <button nz-button nzType="primary" nzShape="circle" [disabled]="waitingResponse" (click)="send()"><span  nz-icon nzType="send"></span></button>
+            <div>
+                <form action="#" style="display: flex; gap: 8px;" [formGroup]="messageForm" (ngSubmit)="send()">
+                    <input nz-input placeholder="Type here..." formControlName="message" type="text" />
+                    <button nz-button nzType="primary" nzShape="circle" [disabled]="waitingResponse"><span  nz-icon nzType="send"></span></button>
+                </form>
             </div>
         </div>
     </div>

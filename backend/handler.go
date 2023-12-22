@@ -10,6 +10,8 @@ type AskRequest struct {
 	Message string `json:"message" form:"message" binding:"required"`
 }
 
+var gAI *GeminiAI
+
 func AskHandler(c *gin.Context) {
 	var askRequest AskRequest
 	if err := c.ShouldBind(&askRequest); err != nil {
@@ -23,10 +25,11 @@ func AskHandler(c *gin.Context) {
 		return
 	}
 
-	gAI := NewGeminiAI(c.Request.Context())
-	defer gAI.Close()
+	if gAI == nil {
+		gAI = NewGeminiAI(c.Request.Context())
+	}
 
-	response, err := gAI.Ask(askRequest.Message)
+	response, err := gAI.SendMessage(c.Request.Context(), askRequest.Message)
 	if err != nil {
 		panic(err)
 	}

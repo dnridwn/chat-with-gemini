@@ -3,6 +3,7 @@ import { Message } from '../../domains/message';
 import { MessageRequestService } from '../../services/message-request/message-request.service';
 import { catchError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -14,8 +15,10 @@ export class HomeComponent implements OnInit {
   @ViewChild('chatContainer', {static: false}) private chatContainer!: ElementRef;
 
   public messages: Message[] = [];
-  public message!: string;
   public waitingResponse: boolean = false;
+  public messageForm = new FormGroup({
+    message: new FormControl<string>('')
+  })
 
   constructor(
     private messageRequestService: MessageRequestService
@@ -25,7 +28,7 @@ export class HomeComponent implements OnInit {
     if (this.waitingResponse) return;
     this.waitingResponse = true;
 
-    const message = this.message;
+    const message = this.messageForm.get('message')?.value || '';
     this.resetInputMessage();
 
     this.addMessage({
@@ -56,7 +59,7 @@ export class HomeComponent implements OnInit {
   }
 
   resetInputMessage() {
-    this.message = '';
+    this.messageForm.get('message')?.reset()
   }
 
   addMessage(data: Message) {
