@@ -17,7 +17,6 @@ const (
 type GeminiAI struct {
 	ctx    context.Context
 	client *genai.Client
-	model  *genai.GenerativeModel
 	cs     *genai.ChatSession
 }
 
@@ -33,7 +32,6 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	return &GeminiAI{
 		ctx:    ctx,
 		client: client,
-		model:  model,
 		cs:     cs,
 	}
 }
