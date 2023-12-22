@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Message } from '../../domains/message';
 import { MessageRequestService } from '../../services/message-request/message-request.service';
-import { catchError } from 'rxjs';
+import { catchError, finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-home',
@@ -17,14 +18,16 @@ export class HomeComponent implements OnInit {
   public messages: Message[] = [];
   public waitingResponse: boolean = false;
   public messageForm = new FormGroup({
-    message: new FormControl<string>('')
+    message: new FormControl<string>('', Validators.required)
   })
 
   constructor(
-    private messageRequestService: MessageRequestService
+    private messageRequestService: MessageRequestService,
+    private messageService: NzMessageService
   ) {}
 
   send() {
+    if (!this.messageForm.valid) return
     if (this.waitingResponse) return;
     this.waitingResponse = true;
 
@@ -41,11 +44,14 @@ export class HomeComponent implements OnInit {
     this.messageRequestService.send(message)
       .pipe(
         catchError((error: HttpErrorResponse) => {
+          this.messageService.create('error', error?.error?.message || 'Something went wrong!')
           throw error
+        }),
+        finalize(() => {
+          this.waitingResponse = false;
         })
       )
       .subscribe((response: any) => {
-        this.waitingResponse = false;
         const responseMessage = response?.data?.response
         if (responseMessage) {
           this.addMessage({
