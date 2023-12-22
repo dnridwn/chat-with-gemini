@@ -15,8 +15,7 @@ const (
 )
 
 type GeminiAI struct {
-	client *genai.Client
-	cs     *genai.ChatSession
+	cs *genai.ChatSession
 }
 
 func NewGeminiAI(ctx context.Context) *GeminiAI {
@@ -29,8 +28,7 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	cs := model.StartChat()
 
 	return &GeminiAI{
-		client: client,
-		cs:     cs,
+		cs: cs,
 	}
 }
 
@@ -41,10 +39,6 @@ func (g *GeminiAI) SendMessage(ctx context.Context, message string) (string, err
 	}
 
 	return parseResponse(resp), nil
-}
-
-func (g *GeminiAI) Close() {
-	g.client.Close()
 }
 
 func getApiKey() string {
