@@ -15,7 +15,6 @@ const (
 )
 
 type GeminiAI struct {
-	ctx    context.Context
 	client *genai.Client
 	cs     *genai.ChatSession
 }
@@ -30,7 +29,6 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	cs := model.StartChat()
 
 	return &GeminiAI{
-		ctx:    ctx,
 		client: client,
 		cs:     cs,
 	}
