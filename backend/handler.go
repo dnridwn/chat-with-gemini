@@ -7,7 +7,7 @@ import (
 )
 
 type AskRequest struct {
-	Message string `json:"message" form:"message" binding:"required"`
+	Message string `json:"message" binding:"required"`
 }
 
 var gAI *GeminiAI
