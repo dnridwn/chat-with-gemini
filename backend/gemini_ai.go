@@ -12,7 +12,6 @@ import (
 const (
 	GeminiPro       string = "gemini-pro"
 	GeminiProVision string = "gemini-pro-vision"
-	Embedding001    string = "embedding-001"
 )
 
 type GeminiAI struct {
