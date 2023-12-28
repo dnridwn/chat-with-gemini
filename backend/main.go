@@ -28,6 +28,7 @@ func route() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.POST("ask", AskHandler)
+	r.GET("ask-with-stream", AskWithStreamHandler)
 
 	return r
 }

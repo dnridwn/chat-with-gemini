@@ -11,7 +11,7 @@
             <nz-list [nzDataSource]="messages" [nzRenderItem]="item" [nzItemLayout]="'horizontal'" [nzNoResult]="emptyChat" style="padding: 10px 20px">
                 <ng-template #item let-msg>
                     <nz-comment [nzAuthor]="msg.author">
-                        <nz-avatar nz-comment-avatar [nzIcon]="msg.avatarIcon"></nz-avatar>
+                        <nz-avatar nz-comment-avatar [nzIcon]="msg.avatarIcon" style="background-color: #3FA9FF;"></nz-avatar>
                         <nz-comment-content>
                         <p>{{ msg.content }}</p>
                         </nz-comment-content>
@@ -28,7 +28,7 @@
             </ng-container>
             
             <div>
-                <form action="#" style="display: flex; gap: 8px;" [formGroup]="messageForm" (ngSubmit)="send()">
+                <form action="#" style="display: flex; gap: 8px;" [formGroup]="messageForm" (ngSubmit)="sendWithStream()">
                     <input nz-input placeholder="Type here..." formControlName="message" type="text" />
                     <button nz-button nzType="primary" nzShape="circle" [disabled]="waitingResponse"><span  nz-icon nzType="send"></span></button>
                 </form>

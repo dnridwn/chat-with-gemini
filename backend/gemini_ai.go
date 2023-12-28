@@ -32,20 +32,19 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	}
 }
 
-func (g *GeminiAI) SendMessage(ctx context.Context, message string) (string, error) {
-	resp, err := g.cs.SendMessage(ctx, genai.Text(message))
-	if err != nil {
-		return "", err
-	}
+func (g *GeminiAI) SendMessage(ctx context.Context, message string) (*genai.GenerateContentResponse, error) {
+	return g.cs.SendMessage(ctx, genai.Text(message))
+}
 
-	return parseResponse(resp), nil
+func (g *GeminiAI) SendMessageStream(ctx context.Context, message string) *genai.GenerateContentResponseIterator {
+	return g.cs.SendMessageStream(ctx, genai.Text(message))
 }
 
 func getApiKey() string {
 	return os.Getenv("GEMINI_AI_API_KEY")
 }
 
-func parseResponse(resp *genai.GenerateContentResponse) string {
+func ParseGeminiResponse(resp *genai.GenerateContentResponse) string {
 	var response string
 	for _, cand := range resp.Candidates {
 		if cand.Content != nil {
