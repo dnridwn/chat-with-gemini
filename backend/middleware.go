@@ -10,7 +10,7 @@ import (
 func panicHandlerMiddleware(c *gin.Context) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Println(fmt.Sprintf("Panic: %v", err))
+			fmt.Printf("Panic: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"status":  false,
 				"message": "Internal Server Error",

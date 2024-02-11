@@ -13,7 +13,7 @@
                     <nz-comment [nzAuthor]="msg.author">
                         <nz-avatar nz-comment-avatar [nzIcon]="msg.avatarIcon" style="background-color: #3FA9FF;"></nz-avatar>
                         <nz-comment-content>
-                        <p>{{ msg.content }}</p>
+                        <p [innerHTML]="msg.content | sanitizeHtml"></p>
                         </nz-comment-content>
                     </nz-comment>
                 </ng-template>
@@ -28,7 +28,7 @@
             </ng-container>
             
             <div>
-                <form action="#" style="display: flex; gap: 8px;" [formGroup]="messageForm" (ngSubmit)="sendWithStream()">
+                <form action="#" style="display: flex; gap: 8px;" [formGroup]="messageForm" (ngSubmit)="send()">
                     <input nz-input placeholder="Type here..." formControlName="message" type="text" />
                     <button nz-button nzType="primary" nzShape="circle" [disabled]="waitingResponse"><span  nz-icon nzType="send"></span></button>
                 </form>

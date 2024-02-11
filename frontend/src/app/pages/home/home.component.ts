@@ -1,11 +1,13 @@
+import { CodeFormatterService } from '../../services/code-formatter/code-formatter.service';
+import { HighlightJS } from 'ngx-highlightjs';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Message } from '../../domains/message';
-import { catchError } from 'rxjs';
+import { catchError, finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { environment } from '../../../environments/environment';
-import { ServerSentEventService } from '../../services/server-sent-event/server-sent-event.service';
+import { HttpRequestService } from '../../services/http-request/http-request.service';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('chatContainer', {static: false}) private chatContainer!: ElementRef;
 
-  public messages: Message[] = [];
+  public messages: Array<Message> = [];
   public waitingResponse: boolean = false;
   public messageForm = new FormGroup({
     message: new FormControl<string>('', Validators.required)
@@ -24,53 +26,52 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private messageService: NzMessageService,
-    private serverSentEventService: ServerSentEventService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private codeFormatterService: CodeFormatterService,
+    private highlightJS: HighlightJS,
+    private elementRef: ElementRef,
+    private httpRequestService: HttpRequestService
+  ) {
+    this.highlightJS.debugMode()
+  }
 
-  sendWithStream() {
+  send() {
     if (!this.messageForm.valid) return
     if (this.waitingResponse) return;
     this.waitingResponse = true;
 
     const message = this.messageForm.get('message')?.value || '';
     this.resetInputMessage();
-
     this.addMessage({
       avatarIcon: 'user',
       author: 'You',
       content: message
     });
 
-    let messageIndex: number = -1;
-    this.serverSentEventService.create(environment.api_url + "/send?message=" + message)
+    this.httpRequestService.post(`${environment.api_url}/send`, { message })
       .pipe(
         catchError((error: HttpErrorResponse) => {
           this.messageService.create('error', error?.error?.message || 'Something went wrong!');
           this.waitingResponse = false;
           this.cdr.detectChanges();
           throw error
-        })
-      )
-      .subscribe((responseData) => {
-        if (responseData.error || responseData.data?.is_eof) {
-          this.serverSentEventService.close();
+        }),
+        finalize(() => {
           this.waitingResponse = false;
           this.cdr.detectChanges();
-          return;
-        }
-
-        if (messageIndex < 0) {
-          messageIndex = this.addMessage({
-            avatarIcon: 'google',
-            author: 'Gemini AI',
-            content: ""
-          });
-        }
-
-        this.messages[messageIndex].content += responseData.data?.response;
-        this.scrollChatToBottom();
-        this.cdr.detectChanges();
+          setTimeout(() => {
+            this.highlight();
+            this.scrollChatToBottom();
+          }, 100);
+        })
+      )
+      .subscribe((responseData: any) => {
+        if (responseData.error) return;
+        this.addMessage({
+          avatarIcon: 'google',
+          author: 'Gemini AI',
+          content: this.format(responseData.data?.response)
+        });
       });
   }
 
@@ -96,6 +97,19 @@ export class HomeComponent implements OnInit {
     } catch(err) {
       console.error(err)
     }     
+  }
+
+  format(text: string): string {
+    text = this.codeFormatterService.formatCode(text);
+    text = this.codeFormatterService.formatBoldText(text);
+    return text;
+  }
+
+  highlight() {
+    const codeEls = this.elementRef.nativeElement.querySelectorAll('pre code') as Array<HTMLElement>;
+    for (let codeEl of codeEls) {
+      this.highlightJS.hljs?.highlightElement(codeEl);
+    }
   }
 
   ngOnInit(): void {

@@ -11,6 +11,7 @@ import { NzListModule } from 'ng-zorro-antd/list';
 import { NzCommentModule } from 'ng-zorro-antd/comment';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { SanitizeHtmlPipe } from '../../pipes/sanitize-html/sanitize-html.pipe';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
+    SanitizeHtmlPipe
   ],
   imports: [
     CommonModule,

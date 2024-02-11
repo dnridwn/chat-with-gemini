@@ -24,7 +24,7 @@ func route() *gin.Engine {
 	r := gin.New()
 
 	r.Use(panicHandlerMiddleware, gin.Logger(), corsMiddleware)
-	r.GET("send", sendRequestValidation, sendHandler)
+	r.POST("send", sendRequestValidation, sendHandler)
 
 	return r
 }
