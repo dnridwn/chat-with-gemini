@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Message } from '../../domains/message';
-import { MessageRequestService } from '../../services/message-request/message-request.service';
-import { catchError, finalize } from 'rxjs';
+import { catchError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -24,47 +23,10 @@ export class HomeComponent implements OnInit {
   })
 
   constructor(
-    private messageRequestService: MessageRequestService,
     private messageService: NzMessageService,
     private serverSentEventService: ServerSentEventService,
     private cdr: ChangeDetectorRef
   ) {}
-
-  send() {
-    if (!this.messageForm.valid) return
-    if (this.waitingResponse) return;
-    this.waitingResponse = true;
-
-    const message = this.messageForm.get('message')?.value || '';
-    this.resetInputMessage();
-
-    this.addMessage({
-      avatarIcon: 'user',
-      author: 'You',
-      content: message
-    });
-
-    this.messageRequestService.send(message)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          this.messageService.create('error', error?.error?.message || 'Something went wrong!')
-          throw error
-        }),
-        finalize(() => {
-          this.waitingResponse = false;
-        })
-      )
-      .subscribe((response: any) => {
-        const responseMessage = response?.data?.response
-        if (responseMessage) {
-          this.addMessage({
-            avatarIcon: 'google',
-            author: 'Gemini AI',
-            content: responseMessage
-          });
-        }
-      })
-  }
 
   sendWithStream() {
     if (!this.messageForm.valid) return
