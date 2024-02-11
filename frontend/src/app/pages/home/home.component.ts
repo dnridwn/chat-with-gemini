@@ -81,7 +81,7 @@ export class HomeComponent implements OnInit {
     });
 
     let messageIndex: number = -1;
-    this.serverSentEventService.create(environment.api_url + "/ask-with-stream?message=" + message)
+    this.serverSentEventService.create(environment.api_url + "/send?message=" + message)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           this.messageService.create('error', error?.error?.message || 'Something went wrong!');

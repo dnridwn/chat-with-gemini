@@ -1,69 +1,25 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/iterator"
 )
 
-type AskRequest struct {
-	Message string `json:"message" form:"message" binding:"required"`
-}
+var gAI *GeminiClient
 
-var gAI *GeminiAI
-
-func AskHandler(c *gin.Context) {
-	var askRequest AskRequest
-	if err := c.ShouldBind(&askRequest); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"status":  false,
-			"message": "Validation error",
-			"data": map[string]string{
-				"errors": err.Error(),
-			},
-		})
+func sendHandler(c *gin.Context) {
+	request, exists := c.Get("request")
+	if !exists {
 		return
 	}
 
 	if gAI == nil {
-		gAI = NewGeminiAI(c.Request.Context())
-	}
-
-	response, err := gAI.SendMessage(c.Request.Context(), askRequest.Message)
-	if err != nil {
-		panic(err)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"status":  true,
-		"message": "Successfully get response",
-		"data": map[string]string{
-			"response": ParseGeminiResponse(response),
-		},
-	})
-}
-
-func AskWithStreamHandler(c *gin.Context) {
-	var askRequest AskRequest
-	if err := c.ShouldBind(&askRequest); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"status":  false,
-			"message": "Validation error",
-			"data": map[string]string{
-				"errors": err.Error(),
-			},
-		})
-		return
+		gAI = NewGeminiClient(c.Request.Context(), getApiKey())
 	}
 
 	notify := c.Writer.(gin.ResponseWriter).CloseNotify()
+	iter := gAI.SendMessageStream(c.Request.Context(), request.(AskRequest).Message)
 
-	if gAI == nil {
-		gAI = NewGeminiAI(c.Request.Context())
-	}
-
-	iter := gAI.SendMessageStream(c.Request.Context(), askRequest.Message)
 	for {
 		select {
 		case <-notify:
@@ -84,15 +40,15 @@ func AskWithStreamHandler(c *gin.Context) {
 			}
 
 			if err != nil {
+				c.Writer.Flush()
 				panic(err)
 			}
 
-			parsedReponse := ParseGeminiResponse(resp)
 			c.SSEvent("message", gin.H{
 				"status":  false,
 				"message": "Successfully get response",
 				"data": map[string]any{
-					"response": parsedReponse,
+					"response": ParseGeminiResponse(resp),
 					"is_eof":   false,
 				},
 			})

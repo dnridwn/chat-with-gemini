@@ -23,12 +23,8 @@ func loadENV() {
 func route() *gin.Engine {
 	r := gin.New()
 
-	r.Use(panicHandlerMiddleware)
-	r.Use(corsMiddleware)
-	r.Use(gin.Logger())
-
-	r.POST("ask", AskHandler)
-	r.GET("ask-with-stream", AskWithStreamHandler)
+	r.Use(panicHandlerMiddleware, gin.Logger(), corsMiddleware)
+	r.GET("send", sendRequestValidation, sendHandler)
 
 	return r
 }
