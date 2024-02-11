@@ -14,6 +14,25 @@ const (
 	GeminiProVision string = "gemini-pro-vision"
 )
 
+var explicitMode = []*genai.SafetySetting{
+	{
+		Category:  genai.HarmCategoryHarassment,
+		Threshold: genai.HarmBlockNone,
+	},
+	{
+		Category:  genai.HarmCategoryHateSpeech,
+		Threshold: genai.HarmBlockNone,
+	},
+	{
+		Category:  genai.HarmCategorySexuallyExplicit,
+		Threshold: genai.HarmBlockNone,
+	},
+	{
+		Category:  genai.HarmCategoryDangerousContent,
+		Threshold: genai.HarmBlockNone,
+	},
+}
+
 type GeminiAI struct {
 	cs *genai.ChatSession
 }
@@ -25,6 +44,8 @@ func NewGeminiAI(ctx context.Context) *GeminiAI {
 	}
 
 	model := client.GenerativeModel(GeminiPro)
+	model.SafetySettings = explicitMode
+
 	cs := model.StartChat()
 
 	return &GeminiAI{
