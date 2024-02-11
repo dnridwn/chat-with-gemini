@@ -31,9 +31,7 @@ export class HomeComponent implements OnInit {
     private highlightJS: HighlightJS,
     private elementRef: ElementRef,
     private httpRequestService: HttpRequestService
-  ) {
-    this.highlightJS.debugMode()
-  }
+  ) { }
 
   send() {
     if (!this.messageForm.valid) return
