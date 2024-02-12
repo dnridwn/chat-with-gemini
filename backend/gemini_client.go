@@ -36,10 +36,6 @@ func NewGeminiClient(ctx context.Context, apiKey string) *GeminiClient {
 	}
 }
 
-func (g *GeminiClient) SendMessageStream(ctx context.Context, msg string) *genai.GenerateContentResponseIterator {
-	return g.ChatSession.SendMessageStream(ctx, genai.Text(msg))
-}
-
 func (g *GeminiClient) SendMessage(ctx context.Context, msg string) (*genai.GenerateContentResponse, error) {
 	return g.ChatSession.SendMessage(ctx, genai.Text(msg))
 }
