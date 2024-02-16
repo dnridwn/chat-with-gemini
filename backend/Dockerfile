@@ -1,7 +1,7 @@
-FROM golang:1.22.0-alpine
-WORKDIR /app
+FROM node:20-alpine as build-stage
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
 COPY . .
-RUN go mod download
-RUN go build -o main
 EXPOSE 8080
-CMD ["./main"]
+CMD ["npm", "run", "start"]

@@ -18,11 +18,13 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('chatContainer', {static: false}) private chatContainer!: ElementRef;
 
+  private sessionID!: string;
+
   public messages: Array<Message> = [];
   public waitingResponse: boolean = false;
   public messageForm = new FormGroup({
     message: new FormControl<string>('', Validators.required)
-  })
+  });
 
   constructor(
     private messageService: NzMessageService,
@@ -46,7 +48,7 @@ export class HomeComponent implements OnInit {
       content: message
     });
 
-    this.httpRequestService.post(`${environment.api_url}/send`, { message })
+    this.httpRequestService.post(`${environment.api_url}/send`, { message, session_id: this.sessionID })
       .pipe(
         catchError((error: HttpErrorResponse) => {
           this.messageService.create('error', error?.error?.message || 'Something went wrong!');
@@ -65,6 +67,7 @@ export class HomeComponent implements OnInit {
       )
       .subscribe((responseData: any) => {
         if (responseData.error) return;
+        this.sessionID = responseData.data?.session?.id;
         this.addMessage({
           avatarIcon: 'google',
           author: 'Gemini AI',
