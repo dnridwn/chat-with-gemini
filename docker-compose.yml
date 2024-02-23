@@ -1,6 +1,7 @@
 version: '3'
 services:
   backend:
+    image: dnridwn/chat-with-gemini-backend
     build:
       context: ./backend
     ports:
@@ -16,6 +17,7 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       SENTRY_DSN: ${SENTRY_DSN}
   frontend:
+    image: dnridwn/chat-with-gemini-frontend
     build:
       context: ./frontend
     ports:
