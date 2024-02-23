@@ -17,13 +17,9 @@ function safetyHandler(handler: Function) {
 }
 
 async function homeHandler(_: Request, res: Response) {
-    const result: any = await (await database()).query(`UPDATE chat_sessions SET histories = ?, updated_at = NOW() WHERE deleted_at IS NULL AND ID = ?`, ['', 1]);
     res.json({
         error: false,
-        message: 'Service is running...',
-        data: {
-            result
-        }
+        message: 'Service is running...'
     });
 }
 
