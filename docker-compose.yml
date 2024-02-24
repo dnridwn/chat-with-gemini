@@ -23,4 +23,4 @@ services:
     build:
       context: ./frontend
     ports:
-      - "80:80"
+      - "4200:80"
