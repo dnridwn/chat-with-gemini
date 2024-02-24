@@ -2,6 +2,7 @@ version: '3'
 services:
   backend:
     image: dnridwn/chat-with-gemini-backend
+    platform: linux/amd64
     build:
       context: ./backend
     ports:
@@ -18,6 +19,7 @@ services:
       SENTRY_DSN: ${SENTRY_DSN}
   frontend:
     image: dnridwn/chat-with-gemini-frontend
+    platform: linux/amd64
     build:
       context: ./frontend
     ports:
