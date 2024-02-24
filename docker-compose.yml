@@ -17,6 +17,8 @@ services:
       DB_NAME: ${DB_NAME}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       SENTRY_DSN: ${SENTRY_DSN}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   frontend:
     image: dnridwn/chat-with-gemini-frontend
     platform: linux/amd64
@@ -24,3 +26,5 @@ services:
       context: ./frontend
     ports:
       - "4200:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
